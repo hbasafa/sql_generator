@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+openai
+faiss-cpu
+sentence-transformers
+numpy
+python-dotenv
+instructor
+pytest
+trino
+deepeval
+bitsandbytes
+lm-format-enforcer
+pyyaml

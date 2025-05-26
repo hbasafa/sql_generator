@@ -1,0 +1,16 @@
+[pyproject.toml]
+
+[project]
+name = "sql_generator"
+version = "0.0.4"
+packages = [{ include = "src" }]
+
+[tool.pytest.ini_options]
+pythonpath = "."
+addopts = [
+    "--import-mode=importlib",
+]
+log_cli = true
+log_cli_level = "DEBUG"
+log_cli_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
