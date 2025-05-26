@@ -1,0 +1,48 @@
+# idea files
+.idea
+
+# compiled files
+*.pyc
+
+# local files
+.local
+.env
+
+# vim files
+.swp
+.swo
+.viminfo
+
+# backup files
+*~
+*.backup
+*.bak
+*.tmp
+*.old
+
+# emacs files
+*#
+
+# temp files
+.DS_Store
+.Trash
+tmp
+
+# Docker Volumes
+volumes
+
+# data files
+sample-data
+data
+
+# log files
+*.log
+
+# cache files
+.cache
+.cache-loader
+.cache-loader-lock
+
+# pytest temp files
+pytest_cache
+.coverage
