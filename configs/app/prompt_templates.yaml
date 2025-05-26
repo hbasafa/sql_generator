@@ -1,0 +1,50 @@
+# Generate prompt templates for the SQL generator
+prompt_templates:
+  - name: greeting
+    description: "Greeting prompt"
+    variables: null
+    system_template: |
+      You are a helpful assistant.
+    user_template: |
+      Just say hello!
+  - name: sql_generation
+    description: "SQL generation prompt"
+    variables:
+      - name: "context"
+        description: "schemas"
+        type: "string"
+      - name: "user_query"
+        description: "user prompt"
+        type: "string"
+    system_template: |
+      You are a helpful assistant specialized in writing SQL queries.
+    user_template: |
+      Here is the tables schema related to the user prompt:
+      {context}
+      Here is the user prompt:
+      {user_query}
+      Create an sql query for answering user's prompt. Consider that response should be written in Farsi.
+  - name: sql_pairs
+    description: "(user prompt, sql query) pairs"
+    variables:
+      - name: "context"
+        description: "schema"
+        type: "string"
+    system_template: |
+      You are a helpful assistant specialized in writing SQL queries.
+    user_template: |
+      Given the database schema:
+      {context}
+      Generate a question and sql based the schema.
+  - name: data_samples
+    description: "sample data generation"
+    variables:
+      - name: "context"
+        description: "schema"
+        type: "string"
+    system_template: |
+      You are a helpful assistant specialized in generating sample data.
+    user_template: |
+      Given the database schema:
+      {context}
+      Generate a sample data based the schema in json format. Just give me a non-formatted json string.

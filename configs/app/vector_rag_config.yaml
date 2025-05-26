@@ -1,0 +1,88 @@
+vector_rag:
+  version: 1.0.0
+  vector_db:
+    embedding_model: "all-MiniLM-L6-v2"
+    top_k: 5
+  logging:
+    name: "app.vector_rag"
+  app:
+    host: 0.0.0.0
+    port: 9000
+    debug: true
+    root: "."
+  docker:
+    env_file: ".env"
+  llm:
+    base_url: "https://api.openai.com/v1"
+    model: "gemma3:1b"
+    temperature: 0.0
+    max_tokens: 512
+  trino:
+    host: "localhost"
+    port: 8080
+    user: "trino"
+    password: "trino"
+    databases:
+      - postgresql.public
+      - mongodb.admin
+  schema_registry:
+    endpoint: "http://172.32.16.31:30900/subjects"
+    file_path: "data/db_schema.json"
+  logging:
+    version: 1
+    disable_existing_loggers: true
+    formatters:
+        standard:
+            format: '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        custom:
+            format: "%(asctime)s [%(processName)s: %(process)d] [%(threadName)s: %(thread)d] [%(levelname)s] %(name)s: %(message)s"
+    handlers:
+      default:
+        class: logging.StreamHandler
+        formatter: standard
+        stream: ext://sys.stdout
+      stream_handler:
+        formatter: 'custom'
+        class: 'logging.StreamHandler'
+        stream: 'ext://sys.stdout'
+      file_handler:
+        'formatter': 'custom'
+        'class': 'logging.handlers.RotatingFileHandler'
+        'filename': 'app.log'
+        'maxBytes': 1024 * 1024 * 1 # = 1MB
+        'backupCount': 3
+    root:
+      level: INFO
+      propagate: false
+      handlers:
+        - default
+        - file_handler
+  testing:
+    pairs_path: "data/test_pairs.json"
+    data_path: "data/test_data.json"
+    db_schema_path: "data/test_schema.json"
+    timeout: 10
+    network_name: "test_network"
+    llm:
+      image: "ollama/ollama:latest"
+      container_name: "ollama_test"
+      host: "http://localhost"
+      port: 11434
+      base_url: "http://localhost:11434/v1"
+    zookeeper:
+      image: "bitnami/zookeeper:3.9.1"
+      container_name: "zookeeper_test"
+      host: "http://localhost"
+      port: 2181
+    kafka:
+      image: "bitnami/kafka:3.6.1"
+      container_name: "kafka_test"
+      host: "http://localhost"
+      port: 9092
+      broker_url: "PLAINTEXT://kafka_test:9092"
+    schema_registry:
+      image: "confluentinc/cp-schema-registry:7.5.0"
+      container_name: "schema_registry_test"
+      host: "http://localhost"
+      port: 8081
+      endpoint: "http://localhost:8081/subjects"
