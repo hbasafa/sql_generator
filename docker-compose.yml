@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  sql_generator:
+    image: sql-generator
+    build: Dockerfile
+    container_name: sql_generator
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - 9000:9000
+    depends_on:
+      - trinodb
+    healthcheck:
+      test: curl --fail http://localhost:9000/health || exit 1
+      interval: 40s
+      timeout: 30s
+      retries: 3
+      start_period: 60s
+
+
+  trinodb:
+    image: trinodb/trino:420
+    restart: on-failure
+    platform: ${PLATFORM}
+    container_name: trino
+    ports:
+      - "9080:8080"
+    volumes:
+      - ./configs/trino:/etc/trino
+      - ./data/trino:/data
+    environment:
+      - TRINO_MEMORY=2G
+      - CATALOG_MANAGEMENT=dynamic
+      - TRINO_CONFIG_PROPERTIES=/etc/trino/config.properties
+      - TRINO_JVM_CONFIG=/etc/trino/jvm.config
+    depends_on:
+      - postgres
+      - mongodb
+      - starrocks
+
+
+  # If you want to use postgres for testing purpose, uncomment the following block
+  postgres:
+    image: postgres:14-alpine
+    platform: ${PLATFORM}
+    container_name: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./sample-data:/tmp/data
+    environment:
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=test
+      - POSTGRES_DB=test
+      - PGDATA=/var/lib/postgresql/data/pgdata
+
+  mongodb:
+    image: mongo:4.4
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./configs/mongodb:/data/configdb
+      - ./data/mongodb:/data/db
+      - ./sample-data:/tmp/data
+
+  starrocks:
+    image: starrocks/allin1-ubuntu:3.4.1
+    platform: ${PLATFORM}
+    container_name: starrocks
+    ports:
+      - 9030:9030
+      - 8030:8030
+      - 8040:8040
+
